@@ -23,7 +23,7 @@ public final class PrintUtil {
         for(Attribute a: srcE.attributes()){
             String diffVal = diffE.attributes().get(a.getKey());
 
-            if(StringUtils.isNotEmpty(diffVal)){
+            if(StringUtils.isNotEmpty(diffVal) && diffVal.compareTo(a.getValue()) !=0 ){
                 System.out.println("diff >>>>" + a.getKey() + "=\""  + diffE.attributes().get(a.getKey()) +"\"" );
             }
         }
