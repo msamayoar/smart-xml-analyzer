@@ -1,6 +1,7 @@
 package com.agileengine.analyzer.impl;
 
 import com.agileengine.analyzer.XmlAnalyzerService;
+import com.agileengine.analyzer.util.PrintUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
@@ -32,7 +33,7 @@ public class JSoupXmlAnalyzerServiceImpl implements XmlAnalyzerService{
         try{
             file = new File(filePath);
         }catch (Exception e){
-            //LOGGER , "Error reading file: " + filePath);
+            System.out.println("Error:" + e.getMessage());
         }
         return file;
     }
@@ -48,7 +49,7 @@ public class JSoupXmlAnalyzerServiceImpl implements XmlAnalyzerService{
             return Optional.of(doc.getElementById(element));
 
         } catch (IOException e) {
-            //LOGGER.log(Level.ERROR, "Error reading [{}] file", htmlFile.getAbsolutePath(), e);
+            System.out.println("Error:" + e.getMessage());
             return Optional.empty();
         }
     }
@@ -65,47 +66,39 @@ public class JSoupXmlAnalyzerServiceImpl implements XmlAnalyzerService{
 
             if(null != elements && elements.size()>0){
 
-                List<Element> toCompareElements = elements.stream().
-                        filter(foundElem -> foundElem.text().trim().equalsIgnoreCase(mainElement.text())  &&
-                                checkAttributes(mainElement.attributes(), foundElem.attributes()) )
-                        .collect(Collectors.toList());
+                getElementsAndCoCompare(elements, mainElement);
 
-                for(Element e: toCompareElements){
-
-                    System.out.println("Element found: " + e);
-                    printXpathElement(e);
-                    printDiff(mainElement, e);
-                }
+            }else{
+                System.out.println("No elements were found.");
             }
 
 
         } catch (IOException e) {
-            //LOGGER.log(Level.ERROR, "Error reading [{}] file", htmlFile.getAbsolutePath(), e);
+            System.out.println("Error:" + e.getMessage());
 
         }
     }
 
-    private void printXpathElement(Element e){
-        if( e == null){
-            return;
-        }else{
-            this.printXpathElement(e.parent());
-            System.out.print(e.tagName() + " > ");
-        }
+    private void getElementsAndCoCompare(Elements elements, Element mainElement){
 
-    }
+        List<Element> toCompareElements = elements.stream().
+                filter(foundElem -> foundElem.text().trim().equalsIgnoreCase(mainElement.text())  &&
+                        checkAttributes(mainElement.attributes(), foundElem.attributes()) )
+                .collect(Collectors.toList());
 
-    private void printDiff(Element srcE, Element diffE){
-        System.out.println("");
-        for(Attribute a: srcE.attributes()){
-            String diffVal = diffE.attributes().get(a.getKey());
-
-            if(StringUtils.isNotEmpty(diffVal)){
-                System.out.println("diff >>>>" + a.getKey() + "=\""  + diffE.attributes().get(a.getKey()) +"\"" );
+        if(null!= toCompareElements && toCompareElements.size()>0){
+            for(Element e: toCompareElements){
+                System.out.println("Element found: " + e);
+                PrintUtil.printXpathElement(e);
+                PrintUtil.printDiff(mainElement, e);
             }
+        }else{
+            System.out.println("No diff were found.");
         }
 
     }
+
+
 
 
     private boolean checkAttributes(Attributes srcAttributes, Attributes diffAttributes){
