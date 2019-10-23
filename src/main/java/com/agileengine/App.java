@@ -1,6 +1,5 @@
 package com.agileengine;
 
-
 import com.agileengine.analyzer.XmlAnalyzerService;
 import com.agileengine.analyzer.impl.JSoupXmlAnalyzerServiceImpl;
 import org.apache.commons.lang3.StringUtils;
@@ -14,17 +13,14 @@ public class App
 {
     public static void main( String[] args )
     {
-        /*if(null == args || args.length < 2){
+        if(null == args || args.length < 2){
             System.out.println("Please enter a VALID INPUT to process");
             System.out.println(">> original_file.html changed_file.html");
             return;
         }
 
         final String originalHtmlFile = args[0];
-        final String changedHtmlFile =  args[1];*/
-
-        final String originalHtmlFile = "/home/msamayoa/Downloads/startbootstrap-sb-admin-2-examples/sample-0-origin.html";
-        final String changedHtmlFile =  "/home/msamayoa/Downloads/startbootstrap-sb-admin-2-examples/sample-1-evil-gemini.html";
+        final String changedHtmlFile =  args[1];
 
         final XmlAnalyzerService xmlService = new JSoupXmlAnalyzerServiceImpl();
 
@@ -38,7 +34,8 @@ public class App
 
                 if(elementToIdentify.isPresent()){
                     xmlService.doDiff(fileChangedHtml, elementToIdentify.get());
-
+                }else{
+                    System.out.println("No element were found");
                 }
 
             }
